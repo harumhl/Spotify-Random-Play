@@ -1,6 +1,10 @@
+# Spotify Random Play
+
+Play a random song (and a random part) in your playlist. I use it to test how well I remember song titles
+
 Generated with ChatGPT. And I didn't really care for its quality.
 
-How to run
+# How to run
 
 1. Go to `https://developer.spotify.com/dashboard` and create an app
   1. Enable `Web API`
