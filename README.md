@@ -2,6 +2,8 @@
 
 Play a random song (and a random part) in your playlist. I use it to test how well I remember song titles
 
+Available on https://spotify-random-play.web.app
+
 Generated with ChatGPT. And I didn't really care for its quality.
 
 # How to run
