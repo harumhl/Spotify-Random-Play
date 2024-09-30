@@ -4,6 +4,8 @@ const scopes = 'playlist-read-private user-modify-playback-state user-read-playb
 let accessToken = '';
 let deviceId = '';
 
+const PLAY_MUSIC_ALERT_MESSAGE = 'No active devices found. Start playing music on Spotify at https://open.spotify.com.';
+
 // Function to log in to Spotify
 document.getElementById('login').addEventListener('click', () => {
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&response_type=token`;
@@ -14,15 +16,17 @@ document.getElementById('login').addEventListener('click', () => {
 if (window.location.hash) {
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     accessToken = hashParams.get('access_token');
-    console.log('accessToken', accessToken);
-    getActiveDevices(accessToken);
-    populatePlaylists();
+    document.getElementById('login').style.display = "none";
+
+    if (getActiveDevices(accessToken)) {
+        document.getElementById('main').style.display = "inherit";
+        populatePlaylists();
+    }
 }
 
 // Function to get user playlists
 async function getUserPlaylists() {
     if (!accessToken) return;
-    console.log('getUserPlaylists')
     const response = await fetch('https://api.spotify.com/v1/me/playlists', {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -69,7 +73,7 @@ async function playRandomSong(songs) {
         const songUri = selectedSong.uri;
 
         // Play the song
-        await fetch(`https://api.spotify.com/v1/me/player/play`, {
+        const resp = await fetch(`https://api.spotify.com/v1/me/player/play`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -79,13 +83,17 @@ async function playRandomSong(songs) {
                 uris: [songUri],
                 device_id: deviceId,
                 position_ms: positionInSong
-             })
+            })
         });
+
+        const response = await resp.json();
+        if (response.error.status === 404 && response.error.reason === 'NO_ACTIVE_DEVICE') {
+            alert(PLAY_MUSIC_ALERT_MESSAGE);
+        }
     }
 }
 
 async function getActiveDevices(accessToken) {
-    console.log(accessToken)
     const response = await fetch('https://api.spotify.com/v1/me/player/devices', {
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -95,7 +103,8 @@ async function getActiveDevices(accessToken) {
     const data = await response.json();
     
     if (data.devices?.length === 0) {
-        console.log('No active devices found. Please start playback in the Spotify app.');
+        alert(PLAY_MUSIC_ALERT_MESSAGE);
+        return;
     } else {
         console.log('Active Devices:', data.devices);
     }
