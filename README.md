@@ -14,6 +14,7 @@ Generated with ChatGPT. And I didn't really care for its quality.
   1. Once created, go to Settings and copy the Client ID
 1. Replace the `clientId` in `script.js` to the copied Client ID
 1. Run `npm install -g http-server`
+1. You may have to move `index.html` and `script.js` files under `public` folder
 1. Run `http-server -p 3000`
 1. Go to `http://localhost:3000/index.html`
 1. Go to `https://open.spotify.com` and play music
